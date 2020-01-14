@@ -19,7 +19,7 @@
     "customCss": "",
     "currencySymbol": "£",
     "paymentGateway": "stripe",
-    "databaseConnectionString": "mongodb://127.0.0.1:27017/expresscart",
+    "databaseConnectionString": "mongodb://adminec:a1s2d3f4@mongos-router-external-service:27017/expresscart",
     "theme": "Cloth",
     "trackStock": false,
     "orderHook": "",

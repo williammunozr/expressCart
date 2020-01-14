@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: expresscart-deployment
+  namespace: stage
+  labels:
+    app: expresscart-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: expresscart-deployment
+    spec:
+      containers:
+        - name: image
+          image: hachikoapp/expresscart
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 1111
+              protocol: TCP

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: expresscart-deployment
+  namespace: stage
+spec:
+  selector:
+    app: expresscart-deployment
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 2025
+      targetPort: 1111
