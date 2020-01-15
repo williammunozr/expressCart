@@ -1,20 +1,26 @@
 version: 2.1
-# executors:
-#     docker-publisher:
-#         environment:
-#             IMAGE_NAME: hachikoapp/expresscart
-#         docker:
-#             - image: circleci/buildpack-deps:stretch
 docker-publisher: &docker-publisher
+    working_directory: ~/repo
     environment:
         IMAGE_NAME: hachikoapp/expresscart
     docker:
         - image: circleci/buildpack-deps:stretch
+
+gcloud: &gcloud
+    working_directory: ~/repo
+    docker:
+        - image: google/cloud-sdk:275.0.0
+    environment:
+        GOOGLE_APPLICATION_CREDENTIALS: ~/repo/gke-terraform-2508-3861714af1ab.json
+
 jobs:
     build:
         <<: *docker-publisher
         steps:
             - checkout
+            - run:
+                name: gcp auth
+                command: echo $GCP_CREDENTIALS > gke-terraform-2508-3861714af1ab.json
             - setup_remote_docker
             - run:
                 name: Build Docker Image
@@ -31,7 +37,7 @@ jobs:
         <<: *docker-publisher
         steps:
             - attach_workspace:
-                at: /tmp/workspace
+                at: ~/repo
             - setup_remote_docker
             - run:
                 name: Load archived Docker Image
@@ -41,6 +47,20 @@ jobs:
                 command: |
                     echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
                     docker push "$IMAGE_NAME:latest"
+    express-deploy:
+        <<: *gcloud
+        steps:
+            - attach_workspace:
+                at: ~/repo
+            - run:
+                name: authentication
+                command: gcloud auth activate-service-account --key-file ${HOME}/repo/gke-terraform-2508-3861714af1ab.json || die "unable to authenticate service account for gcloud"
+            - run:
+                name: set_zone
+                command: gcloud --quiet config set compute/zone us-central1-a
+            - run:
+                name: expresscart-deploy
+                command: ./deploy_expresscart.sh
 workflows:
     version: 2
     build-master:
@@ -52,6 +72,12 @@ workflows:
             - publish-latest:
                 requires:
                     - build
+                filters:
+                    branches:
+                        only: master
+            - express-deploy:
+                requires:
+                    - publish-latest
                 filters:
                     branches:
                         only: master
