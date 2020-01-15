@@ -1,13 +1,18 @@
 version: 2.1
-executors:
-    docker-publisher:
-        environment:
-            IMAGE_NAME: hachikoapp/expresscart
-        docker:
-            - image: circleci/buildpack-deps:stretch
+# executors:
+#     docker-publisher:
+#         environment:
+#             IMAGE_NAME: hachikoapp/expresscart
+#         docker:
+#             - image: circleci/buildpack-deps:stretch
+docker-publisher: &docker-publisher
+    environment:
+        IMAGE_NAME: hachikoapp/expresscart
+    docker:
+        - image: circleci/buildpack-deps:stretch
 jobs:
     build:
-        executor: docker-publisher
+        <<: *docker-publisher
         steps:
             - checkout
             - setup_remote_docker
@@ -23,7 +28,7 @@ jobs:
                 paths:
                     - ./image.tar
     publish-latest:
-        executors: docker-publisher
+        <<: *docker-publisher
         steps:
             - attach_workspace:
                 at: /tmp/workspace
