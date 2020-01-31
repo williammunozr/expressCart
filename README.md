@@ -1,5 +1,14 @@
 # expressCart
 
+In this project I will deploy the application to Google Kubernetes Engine:
+
+- GitHub Repository
+- Circle CI doing the following tasks 
+    - Reacting to GitHub changes
+    - Creating a Docker image
+    - Deploying the Docker image to Docker Hub
+    - Deploying the application to GKE 
+
 ![expressCart](https://raw.githubusercontent.com/mrvautin/expressCart/master/public/images/logo.png)
 
 `expressCart` is a fully functional shopping cart built in Node.js (Express, MongoDB) with Stripe, PayPal, Authorize.net, Adyen and Instore payments.
